@@ -1,1 +1,12 @@
 -e .
+# aws-cdk-lib==2.175.1
+# constructs>=10.0.0,<11.0.0
+# aws-cdk.cloud-assembly-schema<40.0.0,>=39.0.1
+# # aws-cdk.core
+# # aws-cdk.aws_lambda
+# # aws-cdk.aws_dynamodb
+# # aws-cdk.aws_iam
+# # boto3
+# # requests
+
+# # pip freeze | xargs pip uninstall -y

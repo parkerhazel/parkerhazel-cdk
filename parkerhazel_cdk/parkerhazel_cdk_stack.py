@@ -1,14 +1,14 @@
 from aws_cdk import (
-    core,
-    aws_lambda as _lambda,
-    aws_dynamodb as dynamodb,
-    aws_iam as iam,
+    aws_lambda as lambda_,
+    aws_dynamodb as dynamodb
 )
+import aws_cdk as cdk
+from constructs import Construct
 from os import path
 
-class ParkerHazelSiteStack(core.Stack):
-    def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
-        super().__init__(scope, id, **kwargs)
+class ParkerHazelSiteStack(cdk.Stack):
+    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+        super().__init__(scope, construct_id, **kwargs)
 
         DEPLOY_TARGET = self.node.try_get_context("deploy_target") or "dev"
 
@@ -19,17 +19,17 @@ class ParkerHazelSiteStack(core.Stack):
         visits_table = dynamodb.Table(self, "VisitsTable",
             partition_key=dynamodb.Attribute(name="userId", type=dynamodb.AttributeType.STRING),
             sort_key=dynamodb.Attribute(name="visitTimestamp", type=dynamodb.AttributeType.STRING),
-            removal_policy=core.RemovalPolicy.DESTROY,  # For dev purposes; removes table on stack deletion
+            removal_policy=cdk.RemovalPolicy.DESTROY,  # For dev purposes; removes table on stack deletion
         )
 
         # Create Lambda function to handle logging visits
-        logging_lambda = _lambda.Function(self, "LoggingLambda",
+        logging_lambda = lambda_.Function(self, "LoggingLambda",
             function_name=env_name('LoggingLambda'),
-            code=_lambda.Code.from_asset(path.join("gbc_eventbridge", "LoggingLambda_fn")),
+            code=lambda_.Code.from_asset(path.join("parkerhazel_cdk", "LoggingLambda_fn")),
             handler="index.handler",
-            runtime=_lambda.Runtime.PYTHON_3_8,
+            runtime=lambda_.Runtime.PYTHON_3_8,
             layers=[],
-            timeout=core.Duration.seconds(30),
+            timeout=cdk.Duration.seconds(30),
             environment={
                 "DEPLOY_TARGET": DEPLOY_TARGET,
                 "VISITS_TABLE": visits_table.table_name

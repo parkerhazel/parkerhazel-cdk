@@ -2,9 +2,10 @@ import json
 import boto3
 import requests
 import os
+import time
 
 dynamodb = boto3.client('dynamodb')
-ipstack_api_key = 'YOUR_API_KEY'
+ipstack_api_key = 'b8e2c14e0acb362f9bbc3edf011fe928'
 
 def handler(event, context):
     body = json.loads(event['body'])
