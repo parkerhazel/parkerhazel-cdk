@@ -5,6 +5,7 @@ from aws_cdk import (
 import aws_cdk as cdk
 from constructs import Construct
 from os import path
+from layers import get_requests_layer
 
 class ParkerHazelSiteStack(cdk.Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
@@ -14,6 +15,8 @@ class ParkerHazelSiteStack(cdk.Stack):
 
         def env_name(name):
             return f"{name}-{DEPLOY_TARGET}"
+        
+        requests_layer = get_requests_layer(self)
 
         # Create DynamoDB table for logging user visits
         visits_table = dynamodb.Table(self, "VisitsTable",
@@ -28,7 +31,7 @@ class ParkerHazelSiteStack(cdk.Stack):
             code=lambda_.Code.from_asset(path.join("parkerhazel_cdk", "LoggingLambda_fn")),
             handler="index.handler",
             runtime=lambda_.Runtime.PYTHON_3_8,
-            layers=[],
+            layers=[ requests_layer ],
             timeout=cdk.Duration.seconds(30),
             environment={
                 "DEPLOY_TARGET": DEPLOY_TARGET,
